@@ -1,0 +1,22 @@
+# Core data processing and analysis libraries
+numpy>=1.19.0
+pandas>=1.0.0
+
+# NLP libraries
+nltk>=3.5
+contractions==0.1.73
+beautifulsoup4>=4.9.0
+
+# String and regex handling
+string
+re
+
+# Machine learning libraries
+scikit-learn>=0.24.0
+keras>=2.4.0
+tensorflow>=2.4.0
+
+# Text preprocessing
+textsearch>=0.0.24
+anyascii>=0.3.2
+pyahocorasick>=2.0.0
