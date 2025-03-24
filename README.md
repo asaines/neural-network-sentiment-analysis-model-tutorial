@@ -42,29 +42,32 @@ data['sentiment'].value_counts()
 Text preprocessing cleans and standardizes our input data:
 
 ```python
-def preprocess_text(text):
-    # Remove HTML tags
+
+#Removing the html strips
+def strip_html(text):
     soup = BeautifulSoup(text, "html.parser")
-    text = soup.get_text()
-    
-    # Remove URLs
+    return soup.get_text(separator=' ')
+
+def preprocessing_text(text):    
+    # Get rid of URLs
     text = re.sub('https?://\S+|www\.\S+', '', text)
-    
-    # Convert to lowercase
+
+    # Lowercase the text
     text = text.lower()
-    
-    # Remove punctuation
-    for punct in string.punctuation:
-        text = text.replace(punct, '')
-    
-    # Expand contractions (e.g., "don't" → "do not")
-    text = contractions.fix(text)
-    
+
+    # Removing punctuations using replace() method
+    for punctuation in string.punctuation:
+        text = text.replace(punctuation, '')
+
+    # Expand contractions and split
+    words = contractions.fix(text).split()
+
     # Remove stopwords
-    words = text.split()
-    words = [word for word in words if word not in stopwords.words('english')]
-    
-    return ' '.join(words)
+    words = [word for word in words if word not in stop_words]
+
+    # Join the words back into a single string
+    text = ' '.join(words)
+    return text
 ```
 
 Why each step helps:
@@ -167,17 +170,24 @@ This approach:
 We evaluate our model on the test data:
 
 ```python
-# Evaluate on test set
-test_loss, test_accuracy = model.evaluate(X_test_padded, y_test_encoded)
+# Make predictions using the trained model
+predictions = model.predict(np.asarray(X_test))
 
-# Generate predictions
-predictions = model.predict(X_test_padded)
-predicted_labels = (predictions > 0.5).astype(int)
+# Set a threshold (adjust as needed)
+threshold = 0.5
 
-# Calculate performance metrics
+# Convert the predicted probabilities to class labels using the threshold
+predicted_labels = (predictions > threshold).astype(int)
+
+# Compute the confusion matrix
 conf_matrix = confusion_matrix(y_test_encoded, predicted_labels)
+
+# Compute the F1 score
 f1 = f1_score(y_test_encoded, predicted_labels, average='weighted')
-report = classification_report(y_test_encoded, predicted_labels, target_names=['negative', 'positive'])
+
+# Generate the classification report
+class_report = classification_report(y_test_encoded, predicted_labels, target_names=label_encoder.classes_)
+
 ```
 
 Our model achieves around 89% accuracy in predicting sentiment.
